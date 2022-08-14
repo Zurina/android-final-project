@@ -40,5 +40,6 @@
     <string name="description_image_preview">Preview image</string>
     <string name="description_android">Android logo</string>
     <string name="description_kotlin">Kotlin logo</string>
+    <string name="title_activity_details_compose">DetailsComposeActivity</string>
 
 </resources>

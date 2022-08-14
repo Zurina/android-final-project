@@ -24,12 +24,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".DetailsActivity" />
-
         <activity android:name=".compose.AboutComposeActivity" />
         <activity android:name=".compose.SavedQuotesActivity" />
-
+        <activity android:name=".compose.DetailsComposeActivity" />
     </application>
 
 </manifest>

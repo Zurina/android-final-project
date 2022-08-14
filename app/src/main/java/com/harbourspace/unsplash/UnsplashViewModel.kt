@@ -15,6 +15,9 @@ class UnsplashViewModel: ViewModel(), UnsplashResult {
     private val _unsplashItems = MutableLiveData<List<UnsplashItem>>()
     val unsplashItems: LiveData<List<UnsplashItem>> = _unsplashItems
 
+    private val _unsplashItems2 = MutableLiveData<UnsplashItem>()
+    val unsplashItems2: LiveData<UnsplashItem> = _unsplashItems2
+
     private val _error = MutableLiveData<Boolean>()
     val error: LiveData<Boolean> = _error
 
@@ -26,9 +29,18 @@ class UnsplashViewModel: ViewModel(), UnsplashResult {
         provider.fetchImages(this)
     }
 
+    fun fetchImageById(id : String) {
+        provider.fetchImageById(id, this)
+    }
+
     override fun onDataFetchedSuccess(images: List<UnsplashItem>) {
         Log.d(TAG, "onDataFetchedSuccess | Received ${images.size} images")
         _unsplashItems.value = images
+    }
+
+    override fun onPhotoByIdFetchedSuccess(image: UnsplashItem) {
+        Log.d(TAG, "onPhotoByIdFetchedSuccess | Received ${image.urls.regular} images")
+        _unsplashItems2.value = image
     }
 
     override fun onDataFetchedFailed() {

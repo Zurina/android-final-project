@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -30,13 +29,11 @@ import androidx.room.Room
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
-import com.harbourspace.unsplash.DetailsActivity
 import com.harbourspace.unsplash.R
 import com.harbourspace.unsplash.UnsplashViewModel
 import com.harbourspace.unsplash.data.AppDatabase
 import com.harbourspace.unsplash.model.ImageUrl
 import com.harbourspace.unsplash.model.UnsplashItem
-import java.util.*
 
 class MainComposeActivity : AppCompatActivity() {
 
@@ -79,20 +76,6 @@ class MainComposeActivity : AppCompatActivity() {
                     }
                 }
             }
-        }
-    }
-
-    @Composable
-    fun OutlinedTextFieldComposable() {
-        var text by remember { mutableStateOf("Hello World") }
-        Row(
-            modifier = Modifier.padding(start = 60.dp, top = 12.dp)
-        ) {
-            OutlinedTextField(
-                value = text,
-                onValueChange = { text = it },
-                label = { Text("Search") },
-            )
         }
     }
 
@@ -241,8 +224,8 @@ class MainComposeActivity : AppCompatActivity() {
     }
 
     private fun openDetailsActivity(image: UnsplashItem) {
-        val intent = Intent(this, DetailsActivity::class.java)
-        intent.putExtra("detailIMageUrl", image.urls.regular)
+        val intent = Intent(this, DetailsComposeActivity::class.java)
+        intent.putExtra("imageId", image.id)
         startActivity(intent)
     }
 }

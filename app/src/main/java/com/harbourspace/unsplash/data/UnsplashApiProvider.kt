@@ -48,4 +48,23 @@ class UnsplashApiProvider {
             }
         })
     }
+
+    fun fetchImageById(id : String, cb: UnsplashResult) {
+        retrofit.fetchPhotoById(id).enqueue(object : Callback<UnsplashItem> {
+            override fun onResponse(call: Call<UnsplashItem>, response: Response<UnsplashItem>) {
+                Log.d("Error", response.body().toString())
+                if (response.isSuccessful && response.body() != null) {
+                    Log.d(TAG, "Response: ${response.body()}")
+                    cb.onPhotoByIdFetchedSuccess(response.body()!!)
+                } else {
+                    cb.onDataFetchedFailed()
+                }
+            }
+
+            override fun onFailure(call: Call<UnsplashItem>, t: Throwable) {
+                Log.e(TAG, "Error loading images", t)
+                cb.onDataFetchedFailed()
+            }
+        })
+    }
 }

@@ -30,7 +30,6 @@ import androidx.room.Room
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
-import com.harbourspace.unsplash.DetailsActivity
 import com.harbourspace.unsplash.R
 import com.harbourspace.unsplash.data.AppDatabase
 import com.harbourspace.unsplash.model.ImageUrl
@@ -147,10 +146,9 @@ class SavedQuotesActivity : AppCompatActivity() {
         }
     }
 
-
     private fun openDetailsActivity(imageUrl: ImageUrl) {
-        val intent = Intent(this, DetailsActivity::class.java)
-        intent.putExtra("detailIMageUrl", imageUrl.url)
+        val intent = Intent(this, DetailsComposeActivity::class.java)
+        intent.putExtra("imageId", imageUrl.id)
         startActivity(intent)
     }
 }
