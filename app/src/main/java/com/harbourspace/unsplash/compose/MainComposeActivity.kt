@@ -58,11 +58,8 @@ class MainComposeActivity : AppCompatActivity() {
 
             MaterialTheme {
 
-                //OutlinedTextFieldComposable
-                // ()
-
                 if (image != null) {
-                    NavigationButtons(image.urls.regular)
+                    NavigationButtons(image)
                 }
 
                 LazyColumn(
@@ -100,7 +97,7 @@ class MainComposeActivity : AppCompatActivity() {
     }
 
     @Composable
-    fun NavigationButtons(url: String) {
+    fun NavigationButtons(image: UnsplashItem) {
         Row(
             modifier = Modifier.padding(top = 12.dp)
         ) {
@@ -143,7 +140,7 @@ class MainComposeActivity : AppCompatActivity() {
                     .weight(1f)
             ) {
                 Button(onClick = {
-                    SaveImageUrlToDb(url)
+                    saveImageUrlToDb(image)
                 }) {
                     Text(text = "Save Quote")
                 }
@@ -162,13 +159,16 @@ class MainComposeActivity : AppCompatActivity() {
         }
     }
 
-    fun SaveImageUrlToDb(url : String) {
+    private fun saveImageUrlToDb(image : UnsplashItem) {
         val db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, "image-url"
-        ).allowMainThreadQueries().build()
+        )
+        .allowMainThreadQueries()
+        .fallbackToDestructiveMigration()
+        .build()
         val imageUrlDao = db.imageUrlDao()
-        imageUrlDao.insertAll(ImageUrl(UUID.randomUUID(), url))
+        imageUrlDao.insertAll(ImageUrl(image.id, image.urls.regular, image.user.name!!, image.description))
     }
 
     @SuppressLint("StringFormatMatches")

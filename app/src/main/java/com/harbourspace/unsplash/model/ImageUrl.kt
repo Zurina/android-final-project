@@ -7,6 +7,8 @@ import java.util.*
 
 @Entity
 data class ImageUrl(
-    @PrimaryKey val uid: UUID,
-    @ColumnInfo(name = "url") val url: String
+    @PrimaryKey val id: String,
+    @ColumnInfo(name = "url") val url: String,
+    @ColumnInfo(name = "authorName") val authorName: String?,
+    @ColumnInfo(name = "description") val description: String?
 )
