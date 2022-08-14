@@ -28,6 +28,7 @@
         <activity android:name=".DetailsActivity" />
 
         <activity android:name=".compose.AboutComposeActivity" />
+        <activity android:name=".compose.SavedQuotesActivity" />
 
     </application>
 

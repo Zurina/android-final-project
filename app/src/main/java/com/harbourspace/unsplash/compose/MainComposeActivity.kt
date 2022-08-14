@@ -12,12 +12,10 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -28,13 +26,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.room.Room
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.harbourspace.unsplash.DetailsActivity
 import com.harbourspace.unsplash.R
 import com.harbourspace.unsplash.UnsplashViewModel
+import com.harbourspace.unsplash.data.AppDatabase
+import com.harbourspace.unsplash.model.ImageUrl
 import com.harbourspace.unsplash.model.UnsplashItem
+import java.util.*
 
 class MainComposeActivity : AppCompatActivity() {
 
@@ -52,24 +54,29 @@ class MainComposeActivity : AppCompatActivity() {
             unsplashViewModel.error.observe(this) {
                 Toast.makeText(baseContext, R.string.main_unable_to_fetch_images, Toast.LENGTH_SHORT).show()
             }
+            val image = unsplashItems.value?.get(0)
 
             MaterialTheme {
 
-                //OutlinedTextFieldComposable()
+                //OutlinedTextFieldComposable
+                // ()
 
-                NavigationButtons()
+                if (image != null) {
+                    NavigationButtons(image.urls.regular)
+                }
 
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(start = 16.dp, end = 16.dp, top = 100.dp)
                 ) {
-                    items(unsplashItems.value ?: emptyList()) {
-
+                    item() {
                         Column(
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            AddUnsplashImage(it)
+                            if (image != null) {
+                                AddUnsplashImage(image)
+                            }
                             Spacer(modifier = Modifier.height(16.dp))
                         }
                     }
@@ -93,7 +100,7 @@ class MainComposeActivity : AppCompatActivity() {
     }
 
     @Composable
-    fun NavigationButtons() {
+    fun NavigationButtons(url: String) {
         Row(
             modifier = Modifier.padding(top = 12.dp)
         ) {
@@ -136,12 +143,32 @@ class MainComposeActivity : AppCompatActivity() {
                     .weight(1f)
             ) {
                 Button(onClick = {
-                    unsplashViewModel.fetchImages()
+                    SaveImageUrlToDb(url)
                 }) {
                     Text(text = "Save Quote")
                 }
             }
+            Card(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .weight(1f)
+            ) {
+                Button(onClick = {
+                    openSaveImagesScreen()
+                }) {
+                    Text(text = "Saved images")
+                }
+            }
         }
+    }
+
+    fun SaveImageUrlToDb(url : String) {
+        val db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java, "image-url"
+        ).allowMainThreadQueries().build()
+        val imageUrlDao = db.imageUrlDao()
+        imageUrlDao.insertAll(ImageUrl(UUID.randomUUID(), url))
     }
 
     @SuppressLint("StringFormatMatches")
@@ -208,9 +235,14 @@ class MainComposeActivity : AppCompatActivity() {
         }
     }
 
+    private fun openSaveImagesScreen() {
+        val intent = Intent(this, SavedQuotesActivity::class.java)
+        startActivity(intent)
+    }
+
     private fun openDetailsActivity(image: UnsplashItem) {
         val intent = Intent(this, DetailsActivity::class.java)
-        intent.putExtra("DetailImage", image)
+        intent.putExtra("detailIMageUrl", image.urls.regular)
         startActivity(intent)
     }
 }

@@ -12,8 +12,8 @@ class DetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
 
-        val detailIMage = intent.extras!!.get("DetailImage") as UnsplashItem
+        val detailIMageUrl = intent.extras!!.get("detailIMageUrl") as String
         val imageView = findViewById<View>(R.id.iv_preview) as ImageView
-        imageView.load(detailIMage.urls.regular)
+        imageView.load(detailIMageUrl)
     }
 }
