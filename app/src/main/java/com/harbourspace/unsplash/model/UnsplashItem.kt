@@ -18,5 +18,7 @@ data class UnsplashItem (
     val updated_at: String,
     val urls: Urls,
     val user: User,
-    val width: Int
+    val width: Int,
+    val exif: Exif,
+    val statistics: Statistics?,
 ) : Parcelable

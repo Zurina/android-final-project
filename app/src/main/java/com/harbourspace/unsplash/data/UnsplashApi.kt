@@ -16,6 +16,6 @@ interface UnsplashAPIClient {
     fun fetchPhotos() : Call<List<UnsplashItem>>
 
     @Headers("Authorization: $AUTHORIZATION_CLIENT_ID $ACCESS_KEY")
-    @GET("photos/{id}")
+    @GET("photos/{id}?stats=true")
     fun fetchPhotoById(@Path("id") id : String) : Call<UnsplashItem>
 }

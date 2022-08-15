@@ -5,7 +5,11 @@
     <string name="main_item_clicked">You\'ve clicked on: %s</string>
     <string name="main_unable_to_fetch_images">Unable to fetch images at this moment.</string>
 
+    <string name="main_tab_quotes" translatable="false">QUOTES</string>
+    <string name="main_tab_favorites" translatable="false">SAVED QUOTES</string>
+
     <!-- Image Details -->
+
     <string name="details_camera_title">Camera</string>
     <string name="details_camera_default">NIKON D3200</string>
 

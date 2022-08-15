@@ -7,12 +7,14 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -35,6 +37,11 @@ import com.harbourspace.unsplash.data.AppDatabase
 import com.harbourspace.unsplash.model.ImageUrl
 import com.harbourspace.unsplash.model.UnsplashItem
 
+private enum class Tab(@StringRes val tab: Int) {
+    QUOTES(R.string.main_tab_quotes),
+    FAVORITES(R.string.main_tab_favorites)
+}
+
 class MainComposeActivity : AppCompatActivity() {
 
     private val unsplashViewModel: UnsplashViewModel by viewModels()
@@ -54,16 +61,29 @@ class MainComposeActivity : AppCompatActivity() {
             val image = unsplashItems.value?.get(0)
 
             MaterialTheme {
-
                 if (image != null) {
-                    NavigationButtons(image)
+                    AddTopTabNavigation(
+                        image = image,
+                    )
                 }
+            }
+        }
+    }
 
+    @Composable
+    fun OnTabSelected(
+        selected: MutableState<Int>,
+        image : UnsplashItem,
+    ) {
+        when(selected.value) {
+            Tab.QUOTES.ordinal -> {
+                ChangeThemeButton()
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(start = 16.dp, end = 16.dp, top = 100.dp)
                 ) {
+
                     item() {
                         Column(
                             modifier = Modifier.fillMaxSize()
@@ -74,6 +94,91 @@ class MainComposeActivity : AppCompatActivity() {
                             Spacer(modifier = Modifier.height(16.dp))
                         }
                     }
+                }
+            }
+
+            Tab.FAVORITES.ordinal -> {
+                savedImages()
+            }
+        }
+    }
+
+    @Composable
+    fun AddTopTabNavigation(
+        image: UnsplashItem,
+    ) {
+        val selected = remember { mutableStateOf(0) }
+
+        Column(
+            modifier = Modifier.background(Color.LightGray)
+        ) {
+
+            val actions = listOf(Tab.QUOTES, Tab.FAVORITES)
+            TabRow(
+                selectedTabIndex = selected.value,
+                modifier = Modifier.height(48.dp),
+                indicator = @Composable { tabPositions: List<TabPosition> ->
+                    TabRowDefaults.Indicator(
+                        modifier = Modifier.tabIndicatorOffset(tabPositions[selected.value]),
+                        color = Color.White
+                    )
+                },
+                backgroundColor = Color.Black
+
+            ) {
+                actions.forEachIndexed { index, title ->
+
+                    Tab(
+                        selected = selected.value == index,
+                        onClick = {
+                            selected.value = index
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(id = Tab.values()[index].tab),
+                            color = Color.White
+                        )
+                    }
+                }
+            }
+
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = Color.Transparent,
+                content = {
+                    OnTabSelected(
+                        selected = selected,
+                        image = image,
+                    )
+                }
+            )
+        }
+    }
+
+    @Composable
+    fun ChangeThemeButton() {
+        Row(
+            modifier = Modifier.padding(top = 12.dp)
+        ) {
+            Card(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .weight(1f)
+            ) {
+                Button(
+                    colors = ButtonDefaults.buttonColors(backgroundColor = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) Color.White else Color.Black),
+                    onClick = {
+                        if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                        } else {
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                        }
+                    }
+                ) {
+                    Text(
+                        color = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) Color.Black else Color.White,
+                        text = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) "Light Mode" else "Dark Mode"
+                    )
                 }
             }
         }
@@ -178,7 +283,7 @@ class MainComposeActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         )
                         .show()
-                    openDetailsActivity(image)
+                    openDetailsActivity(image.id)
                 },
             backgroundColor = colorResource(id = R.color.purple_500)
         ) {
@@ -187,6 +292,20 @@ class MainComposeActivity : AppCompatActivity() {
                 painter = painter,
                 contentDescription = stringResource(id = R.string.description_image_preview),
             )
+
+            Column(
+                verticalArrangement = Arrangement.Top
+            ) {
+                Button(
+                    onClick = {
+                        saveImageUrlToDb(image)
+                    }) {
+                    Text(
+                        modifier = Modifier.background(Color.Black).padding(10.dp),
+                        text = "Save"
+                    )
+                }
+            }
 
             Column(
                 modifier = Modifier
@@ -223,9 +342,113 @@ class MainComposeActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun openDetailsActivity(image: UnsplashItem) {
+    private fun openDetailsActivity(id: String) {
         val intent = Intent(this, DetailsComposeActivity::class.java)
-        intent.putExtra("imageId", image.id)
+        intent.putExtra("imageId", id)
         startActivity(intent)
+    }
+    @SuppressLint("StringFormatMatches")
+    @Composable
+    private fun savedImages() {
+        val db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java, "image-url"
+        )
+            .allowMainThreadQueries()
+            .fallbackToDestructiveMigration()
+            .build()
+        val imageUrls = db.imageUrlDao().getAll()
+
+        OutlinedTextFieldComposable()
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 16.dp, end = 16.dp, top = 100.dp)
+        ) {
+            items(imageUrls.count()) {
+
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    val context = LocalContext.current
+                    val painter = rememberAsyncImagePainter(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(imageUrls[it].url)
+                            .transformations(listOf(CircleCropTransformation()))
+                            .build()
+                    )
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(500.dp)
+                            .padding(bottom = 10.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable {
+                                Toast
+                                    .makeText(
+                                        context,
+                                        getString(
+                                            R.string.main_item_clicked,
+                                            imageUrls[it]
+                                        ),
+                                        Toast.LENGTH_SHORT
+                                    )
+                                    .show()
+                                openDetailsActivity(imageUrls[it].id)
+                            },
+                        backgroundColor = colorResource(id = R.color.purple_500)
+                    ) {
+
+                        Image(
+                            painter = painter,
+                            contentDescription = stringResource(id = R.string.description_image_preview),
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            verticalArrangement = Arrangement.Bottom
+                        ) {
+
+                            Text(
+                                text = imageUrls[it].description ?: "",
+                                color = Color.White,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Text(
+                                text = imageUrls[it].authorName ?: "",
+                                color = Color.White,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Light,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+    @Composable
+    fun OutlinedTextFieldComposable() {
+        var text by remember { mutableStateOf("Search") }
+        Row(
+            modifier = Modifier.padding(start = 60.dp, top = 12.dp)
+        ) {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it },
+                label = { Text("Search") },
+            )
+        }
     }
 }

@@ -45,13 +45,13 @@ class DetailsComposeActivity : AppCompatActivity() {
 
         setContent {
 
-            val unsplashItems = unsplashViewModel.unsplashItems2.observeAsState()
+            val unsplashItem = unsplashViewModel.unsplashItem.observeAsState()
 
             unsplashViewModel.error.observe(this) {
                 Toast.makeText(baseContext, R.string.main_unable_to_fetch_images, Toast.LENGTH_SHORT).show()
             }
 
-            val image = unsplashItems.value
+            val image = unsplashItem.value
 
             Surface(modifier = Modifier.fillMaxSize(), color = colors.background) {
                 if (image != null) {
@@ -91,12 +91,14 @@ fun Greeting(name: String, image : UnsplashItem) {
                 modifier = Modifier.height(280.dp).fillMaxWidth(),
                 contentAlignment = Alignment.BottomStart
             ) {
-                Text(
-                    text = "Barcelona, Spain",
-                    color = Color.White,
-                    fontSize = 19.sp,
-                    modifier = Modifier.padding(10.dp).padding(start = 24.dp),
-                )
+                image.description?.let {
+                    Text(
+                        text = it,
+                        color = Color.White,
+                        fontSize = 19.sp,
+                        modifier = Modifier.padding(10.dp).padding(start = 24.dp),
+                    )
+                }
             }
         }
         Column(
@@ -120,7 +122,7 @@ fun Greeting(name: String, image : UnsplashItem) {
                 )
 
                 Text(
-                    text = "Biel Moro",
+                    text = image.user.name!!,
                     color = Color.White,
                     fontSize = 19.sp,
                     fontStyle = FontStyle.Normal
@@ -153,7 +155,7 @@ fun Greeting(name: String, image : UnsplashItem) {
                         fontSize = 19.sp,
                     )
                     Text(
-                        text = "NIKON D3200",
+                        text = image.exif.model,
                         color = Color.Gray,
                         fontSize = 19.sp,
                     )
@@ -165,7 +167,7 @@ fun Greeting(name: String, image : UnsplashItem) {
                         fontSize = 19.sp,
                     )
                     Text(
-                        text = "18.0mm",
+                        text = image.exif.focal_length,
                         color = Color.Gray,
                         fontSize = 19.sp,
                     )
@@ -177,7 +179,7 @@ fun Greeting(name: String, image : UnsplashItem) {
                         fontSize = 19.sp,
                     )
                     Text(
-                        text = "100",
+                        text = image.exif.iso.toString(),
                         color = Color.Gray,
                         fontSize = 19.sp,
                     )
@@ -192,7 +194,7 @@ fun Greeting(name: String, image : UnsplashItem) {
                         fontSize = 19.sp,
                     )
                     Text(
-                        text = "f/5.0",
+                        text = image.exif.aperture,
                         color = Color.Gray,
                         fontSize = 19.sp,
                     )
@@ -203,7 +205,7 @@ fun Greeting(name: String, image : UnsplashItem) {
                         fontSize = 19.sp,
                     )
                     Text(
-                        text = "1/125s",
+                        text = image.exif.exposure_time,
                         color = Color.Gray,
                         fontSize = 19.sp,
                     )
@@ -214,7 +216,7 @@ fun Greeting(name: String, image : UnsplashItem) {
                         fontSize = 19.sp,
                     )
                     Text(
-                        text = "3906 x 4882",
+                        text = image.width.toString() + " x " + image.height.toString(),
                         color = Color.Gray,
                         fontSize = 19.sp,
                     )
@@ -265,19 +267,19 @@ fun Greeting(name: String, image : UnsplashItem) {
             ) {
 
                 Text(
-                    text = "8.8M",
+                    text = image.statistics?.views?.total.toString(),
                     color = Color.Gray,
                     fontSize = 19.sp,
                     fontStyle = FontStyle.Normal
                 )
                 Text(
-                    text = "99.1K",
+                    text = image.statistics?.downloads?.total.toString(),
                     color = Color.Gray,
                     fontSize = 19.sp,
                     fontStyle = FontStyle.Normal
                 )
                 Text(
-                    text = "1.8K",
+                    text = image.statistics?.likes?.total.toString(),
                     color = Color.Gray,
                     fontSize = 19.sp,
                     fontStyle = FontStyle.Normal
