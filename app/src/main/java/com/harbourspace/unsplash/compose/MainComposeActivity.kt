@@ -313,7 +313,7 @@ class MainComposeActivity : AppCompatActivity() {
 
         var searchFlag by remember { mutableStateOf(false) }
         if (searchFlag) {
-            _imageUrls.value = db.imageUrlDao().getPhotosByAuthorName("%$text%")
+            _imageUrls.value = db.imageUrlDao().getPhotosBySearchPattern("%$text%")
             imageUrls = imageUrlsLive.observeAsState()
         }
         Row(

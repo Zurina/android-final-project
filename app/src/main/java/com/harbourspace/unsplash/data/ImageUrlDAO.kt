@@ -10,8 +10,8 @@ interface ImageUrlDAO {
     @Query("SELECT * FROM imageurl")
     fun getAll(): List<ImageUrl>
 
-    @Query("SELECT * FROM imageurl where authorName LIKE :authorName")
-    fun getPhotosByAuthorName(authorName : String): List<ImageUrl>
+    @Query("SELECT * FROM imageurl where authorName LIKE :pattern OR description LIKE :pattern")
+    fun getPhotosBySearchPattern(pattern : String): List<ImageUrl>
 
     @Insert
     fun insertAll(vararg imageUrls: ImageUrl)
