@@ -27,6 +27,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.room.Room
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -77,11 +79,11 @@ class MainComposeActivity : AppCompatActivity() {
     ) {
         when(selected.value) {
             Tab.QUOTES.ordinal -> {
-                ChangeThemeButton()
+                //ChangeThemeButton()
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(start = 16.dp, end = 16.dp, top = 100.dp)
+                        .padding(start = 16.dp, end = 16.dp, top = 50.dp)
                 ) {
 
                     item() {
@@ -184,69 +186,6 @@ class MainComposeActivity : AppCompatActivity() {
         }
     }
 
-    @Composable
-    fun NavigationButtons(image: UnsplashItem) {
-        Row(
-            modifier = Modifier.padding(top = 12.dp)
-        ) {
-            Card(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .weight(1f)
-            ) {
-                Button(
-                    colors = ButtonDefaults.buttonColors(backgroundColor = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) Color.White else Color.Black),
-                    onClick = {
-                    if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                    } else {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                    }
-                }
-                ) {
-                    Text(
-                        color = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) Color.Black else Color.White,
-                        text = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) "Light Mode" else "Dark Mode"
-                    )
-                }
-            }
-
-            Card(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .weight(1f)
-            ) {
-                Button(onClick = {
-                    unsplashViewModel.fetchImages()
-                }) {
-                    Text(text = "New Quote")
-                }
-            }
-            Card(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .weight(1f)
-            ) {
-                Button(onClick = {
-                    saveImageUrlToDb(image)
-                }) {
-                    Text(text = "Save Quote")
-                }
-            }
-            Card(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .weight(1f)
-            ) {
-                Button(onClick = {
-                    openSaveImagesScreen()
-                }) {
-                    Text(text = "Saved images")
-                }
-            }
-        }
-    }
-
     private fun saveImageUrlToDb(image : UnsplashItem) {
         val db = Room.databaseBuilder(
             applicationContext,
@@ -293,9 +232,18 @@ class MainComposeActivity : AppCompatActivity() {
                 contentDescription = stringResource(id = R.string.description_image_preview),
             )
 
-            Column(
-                verticalArrangement = Arrangement.Top
+            Row(
+                horizontalArrangement = Arrangement.Start
             ) {
+                Button(
+                    onClick = {
+                        unsplashViewModel.fetchImages()
+                    }) {
+                    Text(
+                        modifier = Modifier.background(Color.Black).padding(10.dp),
+                        text = "New"
+                    )
+                }
                 Button(
                     onClick = {
                         saveImageUrlToDb(image)
@@ -337,19 +285,19 @@ class MainComposeActivity : AppCompatActivity() {
         }
     }
 
-    private fun openSaveImagesScreen() {
-        val intent = Intent(this, SavedQuotesActivity::class.java)
-        startActivity(intent)
-    }
-
     private fun openDetailsActivity(id: String) {
         val intent = Intent(this, DetailsComposeActivity::class.java)
         intent.putExtra("imageId", id)
         startActivity(intent)
     }
+
+    private val _imageUrls = MutableLiveData<List<ImageUrl>>()
+    private val imageUrlsLive: LiveData<List<ImageUrl>> = _imageUrls
+
     @SuppressLint("StringFormatMatches")
     @Composable
     private fun savedImages() {
+
         val db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, "image-url"
@@ -357,16 +305,36 @@ class MainComposeActivity : AppCompatActivity() {
             .allowMainThreadQueries()
             .fallbackToDestructiveMigration()
             .build()
-        val imageUrls = db.imageUrlDao().getAll()
 
-        OutlinedTextFieldComposable()
+        _imageUrls.value = db.imageUrlDao().getAll()
+        var imageUrls = imageUrlsLive.observeAsState()
+
+        var text by remember { mutableStateOf("") }
+
+        var searchFlag by remember { mutableStateOf(false) }
+        if (searchFlag) {
+            _imageUrls.value = db.imageUrlDao().getPhotosByAuthorName("%$text%")
+            imageUrls = imageUrlsLive.observeAsState()
+        }
+        Row(
+            modifier = Modifier.padding(start = 60.dp, top = 12.dp)
+        ) {
+            OutlinedTextField(
+                value = text,
+                onValueChange = {
+                    text = it
+                    searchFlag = true
+                },
+                label = { Text("Search") },
+            )
+        }
 
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(start = 16.dp, end = 16.dp, top = 100.dp)
         ) {
-            items(imageUrls.count()) {
+            items(imageUrls.value?.count() ?: 0) {
 
                 Column(
                     modifier = Modifier.fillMaxSize()
@@ -374,7 +342,7 @@ class MainComposeActivity : AppCompatActivity() {
                     val context = LocalContext.current
                     val painter = rememberAsyncImagePainter(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(imageUrls[it].url)
+                            .data(imageUrls.value?.get(it)?.url)
                             .transformations(listOf(CircleCropTransformation()))
                             .build()
                     )
@@ -391,12 +359,12 @@ class MainComposeActivity : AppCompatActivity() {
                                         context,
                                         getString(
                                             R.string.main_item_clicked,
-                                            imageUrls[it]
+                                            imageUrls.value?.get(it)
                                         ),
                                         Toast.LENGTH_SHORT
                                     )
                                     .show()
-                                openDetailsActivity(imageUrls[it].id)
+                                imageUrls.value?.get(it)?.let { it1 -> openDetailsActivity(it1.id) }
                             },
                         backgroundColor = colorResource(id = R.color.purple_500)
                     ) {
@@ -414,7 +382,7 @@ class MainComposeActivity : AppCompatActivity() {
                         ) {
 
                             Text(
-                                text = imageUrls[it].description ?: "",
+                                text = imageUrls.value?.get(it)?.description ?: "",
                                 color = Color.White,
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold,
@@ -425,7 +393,7 @@ class MainComposeActivity : AppCompatActivity() {
                             Spacer(modifier = Modifier.height(4.dp))
 
                             Text(
-                                text = imageUrls[it].authorName ?: "",
+                                text = imageUrls.value?.get(it)?.authorName ?: "",
                                 color = Color.White,
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Light,
@@ -436,19 +404,6 @@ class MainComposeActivity : AppCompatActivity() {
                     }
                 }
             }
-        }
-    }
-    @Composable
-    fun OutlinedTextFieldComposable() {
-        var text by remember { mutableStateOf("Search") }
-        Row(
-            modifier = Modifier.padding(start = 60.dp, top = 12.dp)
-        ) {
-            OutlinedTextField(
-                value = text,
-                onValueChange = { text = it },
-                label = { Text("Search") },
-            )
         }
     }
 }

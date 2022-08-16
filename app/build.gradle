@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-android-extensions'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -48,9 +49,16 @@ android {
 
 dependencies {
 
+    implementation "androidx.navigation:navigation-compose:2.4.0-alpha04"
+
+    implementation platform('com.google.firebase:firebase-bom:30.3.2')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
+    implementation 'androidx.navigation:navigation-runtime-ktx:2.5.1'
+    implementation 'com.google.firebase:firebase-auth-ktx:21.0.1'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     apply plugin: 'kotlin-kapt'
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"

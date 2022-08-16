@@ -16,17 +16,18 @@
         android:theme="@style/Theme.HarbourUnsplash"
         tools:targetApi="31">
         <activity
-            android:name=".compose.MainComposeActivity"
+            android:name=".compose.MainComposeActivity"/>
+        <activity android:name=".compose.AboutComposeActivity" />
+        <activity android:name=".compose.SavedQuotesActivity" />
+        <activity android:name=".compose.DetailsComposeActivity" />
+        <activity android:name=".compose.LoginComposeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>/>
         </activity>
-        <activity android:name=".compose.AboutComposeActivity" />
-        <activity android:name=".compose.SavedQuotesActivity" />
-        <activity android:name=".compose.DetailsComposeActivity" />
     </application>
 
 </manifest>
