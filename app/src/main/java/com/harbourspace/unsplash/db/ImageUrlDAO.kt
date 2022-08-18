@@ -1,4 +1,4 @@
-package com.harbourspace.unsplash.data
+package com.harbourspace.unsplash.db
 
 import androidx.room.Dao
 import androidx.room.Insert

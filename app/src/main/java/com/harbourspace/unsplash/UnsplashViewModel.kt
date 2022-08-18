@@ -4,10 +4,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.harbourspace.unsplash.data.ImageUrlDAO
 import com.harbourspace.unsplash.data.UnsplashApiProvider
 import com.harbourspace.unsplash.data.cb.UnsplashResult
-import com.harbourspace.unsplash.model.ImageUrl
 import com.harbourspace.unsplash.model.UnsplashItem
 
 private const val TAG = "UnsplashViewModel"

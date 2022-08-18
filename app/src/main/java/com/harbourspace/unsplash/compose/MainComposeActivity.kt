@@ -35,7 +35,8 @@ import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.harbourspace.unsplash.R
 import com.harbourspace.unsplash.UnsplashViewModel
-import com.harbourspace.unsplash.data.AppDatabase
+import com.harbourspace.unsplash.compose.ui.theme.SystemUI
+import com.harbourspace.unsplash.db.AppDatabase
 import com.harbourspace.unsplash.model.ImageUrl
 import com.harbourspace.unsplash.model.UnsplashItem
 
@@ -63,6 +64,7 @@ class MainComposeActivity : AppCompatActivity() {
             val image = unsplashItems.value?.get(0)
 
             MaterialTheme {
+                SystemUI(window = window).setStatusBarColor(Color.Green, false)
                 if (image != null) {
                     AddTopTabNavigation(
                         image = image,

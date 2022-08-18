@@ -31,7 +31,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.harbourspace.unsplash.R
-import com.harbourspace.unsplash.data.AppDatabase
+import com.harbourspace.unsplash.db.AppDatabase
 import com.harbourspace.unsplash.model.ImageUrl
 
 class SavedQuotesActivity : AppCompatActivity() {

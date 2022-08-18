@@ -1,4 +1,4 @@
-package com.harbourspace.unsplash.data
+package com.harbourspace.unsplash.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
