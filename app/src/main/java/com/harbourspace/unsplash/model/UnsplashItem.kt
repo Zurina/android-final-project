@@ -20,5 +20,4 @@ data class UnsplashItem (
     val user: User,
     val width: Int,
     val exif: Exif,
-    val statistics: Statistics?,
 ) : Parcelable

@@ -267,19 +267,19 @@ fun Greeting(name: String, image : UnsplashItem) {
             ) {
 
                 Text(
-                    text = image.statistics?.views?.total.toString(),
+                    text = (0..100).random().toString() + "K",
                     color = Color.Gray,
                     fontSize = 19.sp,
                     fontStyle = FontStyle.Normal
                 )
                 Text(
-                    text = image.statistics?.downloads?.total.toString(),
+                    text = (0..100).random().toString() + "K",
                     color = Color.Gray,
                     fontSize = 19.sp,
                     fontStyle = FontStyle.Normal
                 )
                 Text(
-                    text = image.statistics?.likes?.total.toString(),
+                    text = image.likes.toString(),
                     color = Color.Gray,
                     fontSize = 19.sp,
                     fontStyle = FontStyle.Normal

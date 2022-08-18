@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -75,39 +74,6 @@ class MainComposeActivity : AppCompatActivity() {
     }
 
     @Composable
-    fun OnTabSelected(
-        selected: MutableState<Int>,
-        image : UnsplashItem,
-    ) {
-        when(selected.value) {
-            Tab.QUOTES.ordinal -> {
-                //ChangeThemeButton()
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(start = 16.dp, end = 16.dp, top = 50.dp)
-                ) {
-
-                    item() {
-                        Column(
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            if (image != null) {
-                                AddUnsplashImage(image)
-                            }
-                            Spacer(modifier = Modifier.height(16.dp))
-                        }
-                    }
-                }
-            }
-
-            Tab.FAVORITES.ordinal -> {
-                savedImages()
-            }
-        }
-    }
-
-    @Composable
     fun AddTopTabNavigation(
         image: UnsplashItem,
     ) {
@@ -160,30 +126,34 @@ class MainComposeActivity : AppCompatActivity() {
     }
 
     @Composable
-    fun ChangeThemeButton() {
-        Row(
-            modifier = Modifier.padding(top = 12.dp)
-        ) {
-            Card(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .weight(1f)
-            ) {
-                Button(
-                    colors = ButtonDefaults.buttonColors(backgroundColor = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) Color.White else Color.Black),
-                    onClick = {
-                        if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
-                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                        } else {
-                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+    fun OnTabSelected(
+        selected: MutableState<Int>,
+        image : UnsplashItem,
+    ) {
+        when(selected.value) {
+            Tab.QUOTES.ordinal -> {
+                //ChangeThemeButton()
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = 16.dp, end = 16.dp, top = 50.dp)
+                ) {
+
+                    item() {
+                        Column(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            if (image != null) {
+                                AddUnsplashImage(image)
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
                         }
                     }
-                ) {
-                    Text(
-                        color = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) Color.Black else Color.White,
-                        text = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) "Light Mode" else "Dark Mode"
-                    )
                 }
+            }
+
+            Tab.FAVORITES.ordinal -> {
+                savedImages()
             }
         }
     }
