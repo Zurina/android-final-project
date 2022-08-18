@@ -64,6 +64,7 @@ class HelloWorldWidget : GlanceAppWidget(), UnsplashResult {
     }
 
     override fun onDataFetchedSuccess(images: List<UnsplashItem>) {
+        Log.d("IMAGE URL", images[0].urls.regular)
         image.value = images[0]
     }
 
