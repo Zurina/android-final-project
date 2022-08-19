@@ -155,7 +155,7 @@ fun Greeting(name: String, image : UnsplashItem) {
                         fontSize = 19.sp,
                     )
                     Text(
-                        text = image.exif.model!!,
+                        text = image.exif?.model!!,
                         color = Color.Gray,
                         fontSize = 19.sp,
                     )
@@ -167,7 +167,7 @@ fun Greeting(name: String, image : UnsplashItem) {
                         fontSize = 19.sp,
                     )
                     Text(
-                        text = image.exif.focal_length!!,
+                        text = image.exif?.focal_length!!,
                         color = Color.Gray,
                         fontSize = 19.sp,
                     )
@@ -179,7 +179,7 @@ fun Greeting(name: String, image : UnsplashItem) {
                         fontSize = 19.sp,
                     )
                     Text(
-                        text = image.exif.iso.toString(),
+                        text = image.exif?.iso.toString(),
                         color = Color.Gray,
                         fontSize = 19.sp,
                     )
@@ -194,7 +194,7 @@ fun Greeting(name: String, image : UnsplashItem) {
                         fontSize = 19.sp,
                     )
                     Text(
-                        text = image.exif.aperture!!,
+                        text = image.exif?.aperture!!,
                         color = Color.Gray,
                         fontSize = 19.sp,
                     )
@@ -205,7 +205,7 @@ fun Greeting(name: String, image : UnsplashItem) {
                         fontSize = 19.sp,
                     )
                     Text(
-                        text = image.exif.exposure_time!!,
+                        text = image.exif?.exposure_time!!,
                         color = Color.Gray,
                         fontSize = 19.sp,
                     )
